@@ -1,0 +1,166 @@
+#:kivy 1.11.0
+
+
+<StyledButton@Button>:
+    text_color: 0.95,0.95,0.95,1
+    button_color: 0.157,0.455,0.753,1
+    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
+    margin: (2,1)
+    bold: True
+    font_size: self.size[1] * 0.4
+    radius: 5
+    # dont set these
+    disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
+    color: self.disabled_mask if self.disabled else self.text_color
+    background_color: 0,0,0,0
+    background_normal: ''
+    face_color: [c*m for c,m in zip(self.button_color if root.state=='normal' else self.button_color_down,self.disabled_mask)]
+    canvas.before:
+        Color:
+            rgba: root.face_color or [0,0,0,0]
+        RoundedRectangle:
+            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
+            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
+            radius: (root.radius or 0,)
+
+<DarkLabel@Label>:
+    color: (0.05,0.05,0.05,1)
+
+<LargeLabel@DarkLabel>:
+	bold: True
+
+<CheckBox>
+    color: (0.05,0.05,0.05,1)
+
+<Badukpan>:
+	size: self.parent.height, self.parent.height
+	controls: self.parent.controls
+
+<CheckBox>
+    color: (0.05,0.05,0.05,1)
+
+<CheckBoxHintLabel@ButtonBehavior+DarkLabel>:
+	halign: 'center'
+	valign: 'center'
+
+<CheckBoxHint>
+	orientation: 'vertical'
+	checkbox: checkbox
+	text: ''
+	default_active: False
+	position: (0,0)
+	CheckBoxHintLabel:
+		size_hint: 1,0.45 if root.orientation=='vertical' else (0.8,1)
+		font_size: root.height * 0.2 if root.orientation=='vertical' else root.height
+		text: root.text
+		on_press: if not checkbox.disabled: checkbox._do_press()
+	CheckBox:
+		size_hint: 1,0.55 if root.orientation=='vertical' else (0.2,1)
+		id: checkbox
+		on_active: root.dispatch('on_active')
+		active: root.default_active
+
+<Controls>
+    orientation: 'vertical'
+    hint: hint
+    done: done
+    file_lbl:file
+    cat_lbl: cat
+    dir_lbl: dir
+	TextInput:
+		id: hint
+		size_hint: 1, 0.2
+		valign: 'middle'
+    DarkLabel:
+        text: 'Category'
+        size_hint: 1,0.07
+        bold: True
+        font_size: self.height * 0.6
+    BoxLayout:
+        size_hint: 1,0.13
+        orientation: 'horizontal'
+        StyledButton:
+            text: '<'
+            on_press: root.browse_cat(-1)
+        DarkLabel:
+            text: 'cat'
+            id: cat
+            size_hint: 3,1
+            text_size: self.size[0] * 0.9, self.size[1]
+            font_size: self.size[1] * 0.2 if root.width < 0.66 * root.height else self.size[1] * 0.4
+            valign: 'middle'
+        StyledButton:
+            text: '>'
+            on_press: root.browse_cat(+1)
+    DarkLabel:
+        text: 'Problem Set'
+        size_hint: 1,0.07
+        bold: True
+        font_size: self.height * 0.6
+    BoxLayout:
+        size_hint: 1,0.13
+        orientation: 'horizontal'
+        StyledButton:
+            text: '<'
+            on_press: root.browse_dirs(-1)
+        DarkLabel:
+            text: 'dir'
+            id: dir
+            size_hint: 3,1
+            text_size: self.size[0] * 0.9, self.size[1]
+            font_size: self.size[1] * 0.2 if root.width < 0.66 * root.height else self.size[1] * 0.4
+            valign: 'middle'
+        StyledButton:
+            text: '>'
+            on_press: root.browse_dirs(+1)
+    DarkLabel:
+        text: 'Problem'
+        size_hint: 1,0.07
+        bold: True
+        font_size: self.height * 0.6
+    BoxLayout:
+        size_hint: 1,0.13
+        orientation: 'horizontal'
+        StyledButton:
+            text: '<'
+            on_press: root.browse_files(-1)
+        DarkLabel:
+            text: 'file'
+            id: file
+            size_hint: 3,1
+            text_size: self.size[0] * 0.9, self.size[1]
+            font_size: self.size[1] * 0.2 if root.width < 0.66 * root.height else self.size[1] * 0.4
+            valign: 'middle'
+        StyledButton:
+            text: '>'
+            on_press: root.browse_files(+1)
+    BoxLayout:
+        size_hint: 1,0.15
+        orientation: 'horizontal'
+		CheckBoxHint:
+			size_hint: 0.5, 1
+			text: 'done'
+			id: done
+			on_active: root.set_done(self.active)
+        StyledButton:
+            size_hint: 0.5,1
+            text: '  Show\nSolution' if root.width < 0.66 * root.height else 'Show Solution'
+            font_size: self.size[1] * 0.25 if root.width < 0.66 * root.height else self.size[1] * 0.5
+            on_press: root.solution()
+
+<TsumegoGUI>:
+    orientation: 'vertical' if root.width < root.height else 'horizontal'
+	board: board
+	controls: controls
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Badukpan:
+        size_hint: (1, root.width/root.height) if root.width < root.height else (root.height/root.width, 1)
+        id: board
+    Controls:
+		id: controls
+		size_hint: (1, (root.height - root.width)/root.height) if root.width < root.height else ((root.width - root.height)/root.width, 1)
