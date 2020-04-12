@@ -6,6 +6,7 @@ from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.stencilview import StencilView
 from kivy.uix.widget import Widget
+from kivy.uix.behaviors.button import ButtonBehavior
 
 from controller import Controls
 from kivyutils import *
@@ -22,6 +23,9 @@ class Badukpan(StencilView):
     # drawing functions
     def on_size(self, *args):
         self.redraw()
+
+    def on_touch_down(self, touch):
+        self.controls.hint.text = "Ten Thousand Tsumego does not support 'clicking through' problems. Read out the problem in your head, and move on when you are done."
 
     def draw_stone(self, x, y, col, stone_size, outline_col=None, innercol=None):
         draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
