@@ -1,6 +1,6 @@
 import glob
 import os
-import re
+import re, json
 
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
@@ -66,14 +66,14 @@ class Controls(BoxLayout):
         self.dir_ix = (self.dir_ix + dir) % len(self.dirs)
         self.store.put(f"cat_{self.cats[self.cat_ix]}", ix=self.dir_ix)
         self.dir_lbl.text = self.dirs[self.dir_ix].strip("/").split("/")[-1].lower()
-        self.files = [d for d in natsorted(glob.glob(self.dirs[self.dir_ix] + "/*.sgf"))]
+        self.files = [d for d in natsorted(glob.glob(self.dirs[self.dir_ix] + "/*.json"))]
         self.file_ix = self.store_get(f"dir_{self.dirs[self.dir_ix]}").get("ix", 0)
         self.browse_files(0)
 
     def browse_files(self, dir):
         self.file_ix = (self.file_ix + dir) % len(self.files)
         self.store.put(f"dir_{self.dirs[self.dir_ix]}", ix=self.file_ix)
-        self.file_lbl.text = self.files[self.file_ix].split("/")[-1].lower()
+        self.file_lbl.text = self.files[self.file_ix].split("/")[-1].lower()[:-5]  # strip .json
         self.load(self.files[self.file_ix])
 
     def set_done(self, state):
@@ -84,10 +84,9 @@ class Controls(BoxLayout):
         self.done.checkbox.active = self.store_get(f"done_{self.files[self.file_ix]}").get("state", False)
         try:
             with open(file, "r") as f:
-                sgf = f.read()
-            self.game = {prop: value.strip("[]") for prop, value in re.findall(r"(AB|AW|C|B|W)((?:\[.*?\])*)", sgf)}
+                self.game = json.load(f)
         except Exception as e:
-            self.hint.text = "Exception while reading SGF file {file}: {e}"
+            self.hint.text = "Exception while reading problem file {file}: {e}"
             self.game = {}
         self.hint.text = self.game.get("C", "")
         self.parent.board.redraw()

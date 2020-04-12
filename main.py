@@ -43,14 +43,19 @@ class Badukpan(StencilView):
 
             placements = []
             solution = []
+            solution_comment = ""
             for pl, gtpcol in enumerate("BW"):
-                placement_prop = self.controls.game.get("A" + gtpcol)
-                if placement_prop:
-                    for stone in placement_prop.split("]["):
-                        placements.append(Move(player=pl, sgfcoords=stone, boardsize=boardsize))
-                sgfcoords = self.controls.game.get(gtpcol)
-                if sgfcoords:
-                    solution.append(Move(player=pl, sgfcoords=sgfcoords, boardsize=boardsize))
+                for stone in self.controls.game.get("A" + gtpcol, []):
+                    placements.append(Move(player=pl, sgfcoords=stone, boardsize=boardsize))
+            for i, (bw, sgfc, comment, warning) in enumerate(self.controls.game.get("SOL", [])):
+                if warning and not solution_comment:
+                    solution_comment = warning + "\n"
+                mv = Move(player=0 if bw == "B" else 1, sgfcoords=sgfc, boardsize=boardsize)
+                solution_comment += f"Solution {i+1}: {mv.gtp()}"
+                if comment:
+                    solution_comment += ": " + comment
+                solution_comment += f"\n"
+                solution.append(mv)
             if not placements:
                 xs = [10]
                 ys = [10]
@@ -80,8 +85,12 @@ class Badukpan(StencilView):
             self.grid_size = board.size[0] / (num_cells - 1 + 2 * margin)
             halfmargin = margin / 2 * self.grid_size
             self.stone_size = self.grid_size * 0.475
-            self.gridpos_x = [self.pos[0] + math.floor((margin + (i - xbounds[0])) * self.grid_size + 0.5) for i in range(boardsize)]
-            self.gridpos_y = [self.pos[1] + math.floor((margin + (i - ybounds[0])) * self.grid_size + 0.5) for i in range(boardsize)]
+            self.gridpos_x = [
+                self.pos[0] + math.floor((margin + (i - xbounds[0])) * self.grid_size + 0.5) for i in range(boardsize)
+            ]
+            self.gridpos_y = [
+                self.pos[1] + math.floor((margin + (i - ybounds[0])) * self.grid_size + 0.5) for i in range(boardsize)
+            ]
 
             line_color = (0, 0, 0)
             Color(*line_color)
@@ -101,16 +110,24 @@ class Badukpan(StencilView):
             Color(0.25, 0.25, 0.25)
             for i in range(boardsize):
                 draw_text(
-                    pos=(self.gridpos_x[i], self.gridpos_y[0] - halfmargin), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5,
+                    pos=(self.gridpos_x[i], self.gridpos_y[0] - halfmargin),
+                    text=Move.GTP_COORD[i],
+                    font_size=self.grid_size / 1.5,
                 )
                 draw_text(
-                    pos=(self.gridpos_x[i], self.gridpos_y[-1] + halfmargin), text=Move.GTP_COORD[i], font_size=self.grid_size / 1.5,
+                    pos=(self.gridpos_x[i], self.gridpos_y[-1] + halfmargin),
+                    text=Move.GTP_COORD[i],
+                    font_size=self.grid_size / 1.5,
                 )
                 draw_text(
-                    pos=(self.gridpos_x[0] - halfmargin, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5,
+                    pos=(self.gridpos_x[0] - halfmargin, self.gridpos_y[i]),
+                    text=str(i + 1),
+                    font_size=self.grid_size / 1.5,
                 )
                 draw_text(
-                    pos=(self.gridpos_x[-1] + halfmargin, self.gridpos_y[i]), text=str(i + 1), font_size=self.grid_size / 1.5,
+                    pos=(self.gridpos_x[-1] + halfmargin, self.gridpos_y[i]),
+                    text=str(i + 1),
+                    font_size=self.grid_size / 1.5,
                 )
 
             # stones etc
@@ -119,7 +136,14 @@ class Badukpan(StencilView):
 
             if self.controls.show_solution:
                 for move in solution:
-                    self.draw_stone(*move.coords, COLORS[move.player], self.stone_size, OUTLINE[move.player], COLORS[1 - move.player])
+                    self.draw_stone(
+                        *move.coords,
+                        COLORS[move.player],
+                        self.stone_size,
+                        OUTLINE[move.player],
+                        COLORS[1 - move.player],
+                    )
+                self.controls.hint.text = solution_comment
 
 
 class TsumegoGUI(BoxLayout):

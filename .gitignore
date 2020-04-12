@@ -1,6 +1,7 @@
 
 .idea
 navigation_status.json
+problem_status.json
 
 # builds
 bin
