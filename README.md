@@ -6,7 +6,7 @@
 This repo contains the source code for the mobile app *Ten Thousand Tsumego* with over 10,000 go problems.
 
 ## Installation
-APK binaries are avaiable from the `releases` tab.
+APK binaries are avaiable from [the `releases` tab](https://github.com/sanderland/tsumego/releases).
 
 ## Manual
 Simply choose a category, collection and browse the problems with the arrow keys.
