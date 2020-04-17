@@ -25,7 +25,8 @@ class Badukpan(StencilView):
         self.redraw()
 
     def on_touch_down(self, touch):
-        self.controls.hint.text = "Ten Thousand Tsumego does not support 'clicking through' problems. Read out the problem in your head, and move on when you are done."
+        if self.collide_point(*touch.pos):
+            self.controls.hint.text = "Ten Thousand Tsumego does not support 'clicking through' problems. Read out the problem in your head, and move on when you are done."
 
     def draw_stone(self, x, y, col, stone_size, outline_col=None, innercol=None):
         draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
