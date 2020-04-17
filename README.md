@@ -21,7 +21,7 @@ Your position within a collection is saved.
 </td>
 <td>
    
-![Screenshot](http://imgur.com/eANrgg2)
+![Screenshot](http://imgur.com/eANrgg2.png)
 
 </td>
 </tr>
