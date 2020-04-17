@@ -20,7 +20,7 @@ Your position within a collection is saved.
     * A: Great! Please file an issue on github.
 </td>
 <td>
-![Screenshot](https://imgur.com/dc55ef91-b5c4-4f3b-b050-d4010ed0b153)
+![Screenshot](http://imgur.com/eANrgg2)
 </td>
 </tr>
 </table>
