@@ -1,3 +1,7 @@
+<table border=0>
+<tr>
+<td>
+
 # Ten Thousand Tsumego
 This repo contains the source code for the mobile app *Ten Thousand Tsumego* with over 10,000 go problems.
 
@@ -14,3 +18,11 @@ Your position within a collection is saved.
     * A: This is intentional, you are supposed to read out the problem completely. If you can't, leave the problem for another time.
 * Q: I have found improvements to current problems, or have a problem set I want to contribute!
     * A: Great! Please file an issue on github.
+</td>
+<td>
+   
+![Screenshot](http://imgur.com/eANrgg2.png)
+
+</td>
+</tr>
+</table>
