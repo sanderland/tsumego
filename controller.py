@@ -57,7 +57,7 @@ class Controls(BoxLayout):
     def browse_cat(self, dir):
         self.cat_ix = (self.cat_ix + dir) % len(self.cats)
         self.store.put("root", ix=self.cat_ix)
-        self.cat_lbl.text = self.cats[self.cat_ix].strip("/").split("/")[-1].lower()
+        self.cat_lbl.text = self.cats[self.cat_ix].strip("/").split("/")[-1]
         self.dirs = [d for d in natsorted(glob.glob(self.cats[self.cat_ix] + "/*"))]
         self.dir_ix = self.store_get(f"cat_{self.cats[self.cat_ix]}").get("ix", 0)
         self.browse_dirs(0)
@@ -65,7 +65,7 @@ class Controls(BoxLayout):
     def browse_dirs(self, dir):
         self.dir_ix = (self.dir_ix + dir) % len(self.dirs)
         self.store.put(f"cat_{self.cats[self.cat_ix]}", ix=self.dir_ix)
-        self.dir_lbl.text = self.dirs[self.dir_ix].strip("/").split("/")[-1].lower()
+        self.dir_lbl.text = self.dirs[self.dir_ix].strip("/").split("/")[-1]
         self.files = [d for d in natsorted(glob.glob(self.dirs[self.dir_ix] + "/*.json"))]
         self.file_ix = self.store_get(f"dir_{self.dirs[self.dir_ix]}").get("ix", 0)
         self.browse_files(0)
@@ -73,7 +73,7 @@ class Controls(BoxLayout):
     def browse_files(self, dir):
         self.file_ix = (self.file_ix + dir) % len(self.files)
         self.store.put(f"dir_{self.dirs[self.dir_ix]}", ix=self.file_ix)
-        self.file_lbl.text = self.files[self.file_ix].split("/")[-1].lower()[:-5]  # strip .json
+        self.file_lbl.text = self.files[self.file_ix].split("/")[-1][:-5]  # strip .json
         self.load(self.files[self.file_ix])
 
     def set_done(self, state):
