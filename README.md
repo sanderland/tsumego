@@ -1,6 +1,7 @@
-<table
+<table border=0>
 <tr>
 <td>
+
 # Ten Thousand Tsumego
 This repo contains the source code for the mobile app *Ten Thousand Tsumego* with over 10,000 go problems.
 
