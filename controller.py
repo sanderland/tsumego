@@ -1,13 +1,11 @@
 import glob
 import os
-import re, json
+import random, json
 
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
-from kivy.utils import platform
 from natsort import natsorted
 
-from move import Move
 
 APPNAME = "TenThousandTsumego"
 STORE_FILE = "problem_status.json"
@@ -72,9 +70,20 @@ class Controls(BoxLayout):
 
     def browse_files(self, dir):
         self.file_ix = (self.file_ix + dir) % len(self.files)
+        self.load_file_ix(self.file_ix)
+
+    def load_file_ix(self,file_ix):
         self.store.put(f"dir_{self.dirs[self.dir_ix]}", ix=self.file_ix)
         self.file_lbl.text = self.files[self.file_ix].split("/")[-1][:-5]  # strip .json
         self.load(self.files[self.file_ix])
+
+    def random_next_problem(self):
+        not_done  = [ix for ix, file in enumerate(self.files) if not self.store_get(f"done_{file}").get("state", False) and ix!=self.file_ix]
+        if not_done:
+            self.file_ix = random.choice(not_done)
+            self.load_file_ix(self.file_ix)
+        else:
+            self.hint.text = "Category all done!"
 
     def set_done(self, state):
         self.store.put(f"done_{self.files[self.file_ix]}", state=state)

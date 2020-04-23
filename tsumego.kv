@@ -2,13 +2,11 @@
 
 
 <StyledButton@Button>:
-    text_color: 0.95,0.95,0.95,1
-    button_color: 0.157,0.455,0.753,1
-    button_color_down: (*[c/2 for c in self.button_color[:3]],1)
-    margin: (2,1)
-    bold: True
-    font_size: self.size[1] * 0.4
-    radius: 5
+    text_color: [0.95, 0.95, 0.95, 1]
+    button_color: [0.21, 0.28, 0.31, 1]
+    button_color_down: [0.105, 0.14, 0.155, 1]
+    font_size: self.size[1] * 0.45
+    radius: (self.size[1]/15,)
     # dont set these
     disabled_mask: (0.5,0.5,0.5,1) if self.disabled else (1,1,1,1)
     color: self.disabled_mask if self.disabled else self.text_color
@@ -19,9 +17,9 @@
         Color:
             rgba: root.face_color or [0,0,0,0]
         RoundedRectangle:
-            size: self.size[0]-2*self.margin[0],self.size[1]-2*self.margin[1]
-            pos: (self.pos[0]+self.margin[0],self.pos[1]+self.margin[1])
-            radius: (root.radius or 0,)
+            size: self.size[0],self.size[1]
+            pos: (self.pos[0],self.pos[1])
+            radius: root.radius or (0,)
 
 <DarkLabel@Label>:
     color: (0.05,0.05,0.05,1)
@@ -67,6 +65,7 @@
     file_lbl:file
     cat_lbl: cat
     dir_lbl: dir
+    spacing: 1
 	TextInput:
 		id: hint
 		size_hint: 1, 0.2
@@ -137,13 +136,18 @@
     BoxLayout:
         size_hint: 1,0.15
         orientation: 'horizontal'
+		StyledButton:
+			text: '  Random\nProblem'
+			size_hint: 1, 1
+			font_size: self.size[1] * 0.35
+			on_press: root.random_next_problem()
 		CheckBoxHint:
-			size_hint: 0.5, 1
+			size_hint: 1, 1
 			text: 'done'
 			id: done
 			on_active: root.set_done(self.active)
         StyledButton:
-            size_hint: 0.5,1
+            size_hint: 3,1
             text: '  Show\nSolution' if root.width < 0.66 * root.height else 'Show Solution'
             font_size: self.size[1] * 0.25 if root.width < 0.66 * root.height else self.size[1] * 0.5
             on_press: root.solution()

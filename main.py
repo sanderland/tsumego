@@ -26,7 +26,7 @@ class Badukpan(StencilView):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.controls.hint.text = "Ten Thousand Tsumego does not support 'clicking through' problems. Read out the problem in your head, and move on when you are done."
+            self.controls.hint.text = "Ten Thousand Tsumego does not support 'clicking through' problems."
 
     def draw_stone(self, x, y, col, stone_size, outline_col=None, innercol=None):
         draw_circle((self.gridpos_x[x], self.gridpos_y[y]), stone_size, col)
@@ -56,7 +56,7 @@ class Badukpan(StencilView):
                 if warning and not solution_comment:
                     solution_comment = warning + "\n"
                 mv = Move(player=0 if bw == "B" else 1, sgfcoords=sgfc, boardsize=boardsize)
-                solution_comment += f"Solution {i+1}: {mv.gtp()}"
+                solution_comment += f"Solution {i+1} {': '+mv.gtp() if sgfc else ''}"
                 if comment:
                     solution_comment += ": " + comment
                 solution_comment += f"\n"
@@ -65,8 +65,7 @@ class Badukpan(StencilView):
                 xs = [10]
                 ys = [10]
             else:
-                xs, ys = zip(*[m.coords for m in placements + solution])
-
+                xs, ys = zip(*[m.coords for m in placements + solution if m.coords and m.coords[0] is not None])
             if min(xs) < (boardsize - 1) - max(xs):
                 xtype = 0
                 nc_x = max(xs) + 1
@@ -141,13 +140,14 @@ class Badukpan(StencilView):
 
             if self.controls.show_solution:
                 for move in solution:
-                    self.draw_stone(
-                        *move.coords,
-                        COLORS[move.player],
-                        self.stone_size,
-                        OUTLINE[move.player],
-                        COLORS[1 - move.player],
-                    )
+                    if move.coords and move.coords[0] is not None:
+                        self.draw_stone(
+                            *move.coords,
+                            COLORS[move.player],
+                            self.stone_size,
+                            OUTLINE[move.player],
+                            COLORS[1 - move.player],
+                        )
                 self.controls.hint.text = solution_comment
 
 

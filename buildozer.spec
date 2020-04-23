@@ -4,7 +4,7 @@
 title = Ten Thousand Tsumego
 
 # (str) Package name
-package.name = tsumego
+package.name = ten_thousand_tsumego
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.sander
@@ -28,7 +28,7 @@ source.exclude_exts = md
 source.exclude_patterns = LICENSE,images/*/*.jpg, problem_status.json
 
 # (str) Application versioning (method 1)
-version = 0.6.4
+version = 0.7.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
