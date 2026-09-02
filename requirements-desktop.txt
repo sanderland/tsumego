@@ -1,0 +1,2 @@
+kivy[base]==2.3.1
+natsort==8.4.0
