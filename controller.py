@@ -1,14 +1,43 @@
 import glob
 import os
-import random, json
+import random, json, subprocess, tempfile
+from pathlib import Path
 
 from kivy.storage.jsonstore import JsonStore
 from kivy.uix.boxlayout import BoxLayout
+from kivy.utils import platform
 from natsort import natsorted
+
+from json_to_sgf import problem_to_sgf
 
 
 APPNAME = "TenThousandTsumego"
 STORE_FILE = "problem_status.json"
+SGF_CACHE_DIR = Path(tempfile.gettempdir()) / "tsumego_sgf"
+
+
+def problem_sgf_path(json_path) -> Path:
+    """Cache path for a problem's SGF, mirroring the problems tree."""
+    parts = Path(json_path).parts
+    return SGF_CACHE_DIR.joinpath(*parts[1:]).with_suffix(".sgf")
+
+
+def launch_in_katrain(sgf_path):
+    """Open an SGF file in KaTrain, returning an error message or None on success.
+
+    On macOS this targets the KaTrain app directly; elsewhere the system's
+    default handler for .sgf files is used.
+    """
+    try:
+        if platform == "macosx":
+            subprocess.run(["open", "-a", "KaTrain", str(sgf_path)], check=True, capture_output=True)
+        elif platform == "win":
+            os.startfile(str(sgf_path))  # noqa: attribute exists on Windows only
+        else:
+            subprocess.run(["xdg-open", str(sgf_path)], check=True, capture_output=True)
+    except Exception as e:
+        return f"Could not launch KaTrain: {e}"
+    return None
 
 
 def get_store():
@@ -104,6 +133,22 @@ class Controls(BoxLayout):
         self.show_solution = True
         self.done.checkbox.active = True
         self.parent.board.redraw()
+
+    def open_in_katrain(self):
+        json_path = self.files[self.file_ix]
+        parts = Path(json_path).parts
+        try:
+            with open(json_path, "r") as f:
+                problem = json.load(f)
+            sgf = problem_to_sgf(problem, name=Path(json_path).stem, book=parts[-2], category=parts[-3])
+            sgf_path = problem_sgf_path(json_path)
+            sgf_path.parent.mkdir(parents=True, exist_ok=True)
+            sgf_path.write_text(sgf + "\n", encoding="utf-8")
+        except Exception as e:
+            self.hint.text = f"Could not convert problem: {e}"
+            return
+        error = launch_in_katrain(sgf_path)
+        self.hint.text = error if error else f"Opened {Path(json_path).stem} in KaTrain"
 
     def set_text_to_fit(self, widget, text):
         widget.text = text
