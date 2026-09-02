@@ -45,6 +45,11 @@ def escape_sgf_value(text: str) -> str:
     return text.replace("\\", "\\\\").replace("]", "\\]")
 
 
+def normalize_newlines(text: str) -> str:
+    """Normalize CRLF/CR (found in parts of the source corpus) to plain newlines."""
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
 def natural_key(text: str) -> list:
     """Sort key that orders embedded numbers numerically, like the app's natsorted listings."""
     return [(0, int(part)) if part.isdigit() else (1, part) for part in re.split(r"(\d+)", text)]
@@ -105,7 +110,7 @@ def _parse_comment(problem: dict) -> str:
     comment = problem.get("C", "")
     if not isinstance(comment, str):
         raise ProblemError(f"C must be a string, got {type(comment).__name__}")
-    return comment
+    return normalize_newlines(comment)
 
 
 def _parse_solutions(problem: dict, size: int) -> list[tuple[str, str, str, str, str]]:
@@ -125,7 +130,7 @@ def _parse_solutions(problem: dict, size: int) -> list[tuple[str, str, str, str,
             raise ProblemError(f"SOL entry {i} has unknown color {color!r}")
         note = "source coordinate 'zz' is off-board; exported as pass" if coord == "zz" and size < 26 else ""
         extra = [
-            text if isinstance(text, str) else ""
+            normalize_newlines(text) if isinstance(text, str) else ""
             for text in entry[2:4]
         ]
         while len(extra) < 2:
