@@ -139,3 +139,7 @@ dmypy.json
 # local SGF exports
 /notes/
 
+
+# local build toolchains (brew shim, buildozer venv)
+.build-tools/
+.build-venv/
