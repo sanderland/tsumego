@@ -139,17 +139,25 @@ def _parse_solutions(problem: dict, size: int) -> list[tuple[str, str, str, str,
     return parsed
 
 
+def _parse_problem(problem: dict) -> tuple[int, list[str], list[str], str, list[tuple[str, str, str, str, str]]]:
+    """Validate one problem dict and return ``(size, ab, aw, comment, solutions)``."""
+    size = _parse_size(problem)
+    return (
+        size,
+        _parse_stones(problem, size, "AB"),
+        _parse_stones(problem, size, "AW"),
+        _parse_comment(problem),
+        _parse_solutions(problem, size),
+    )
+
+
 def problem_to_sgf(problem: dict, *, name: str = "", book: str = "", category: str = "", source: str = "") -> str:
     """Convert one problem JSON dict into an FF[4] SGF game tree string.
 
     All ``SOL`` entries become sibling variations of the root, in order. Raises
     :class:`ProblemError` if the problem does not match the expected format.
     """
-    size = _parse_size(problem)
-    ab = _parse_stones(problem, size, "AB")
-    aw = _parse_stones(problem, size, "AW")
-    comment = _parse_comment(problem)
-    solutions = _parse_solutions(problem, size)
+    size, ab, aw, comment, solutions = _parse_problem(problem)
 
     root: list[tuple[str, list[str]]] = [
         ("GM", ["1"]),
@@ -193,17 +201,13 @@ def _solution_children(solutions: list[tuple[str, str, str, str, str]]) -> list[
     return children
 
 
-def problem_branch(problem: dict, *, name: str = "", source: str = "") -> str:
+def problem_branch(problem: dict, *, name: str = "") -> str:
     """Convert one problem into a setup branch for use inside a combined book SGF.
 
     The branch carries the problem's stones and comment; the problem name is prefixed
     to the comment so it stays visible while browsing a book in an SGF editor.
     """
-    size = _parse_size(problem)
-    ab = _parse_stones(problem, size, "AB")
-    aw = _parse_stones(problem, size, "AW")
-    comment = _parse_comment(problem)
-    solutions = _parse_solutions(problem, size)
+    size, ab, aw, comment, solutions = _parse_problem(problem)
 
     branch: list[tuple[str, list[str]]] = []
     if ab:
