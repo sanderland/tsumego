@@ -81,6 +81,16 @@ class TestProblemToSgf:
         assert root.children[0].get_property("W") == ""
         assert root.children[0].get_property("C") == "Solution 1: pass\nno move needed"
 
+    def test_off_board_zz_token_becomes_pass_with_note(self):
+        problem = {"AB": ["aa"], "AW": [], "SZ": 19, "SOL": [["W", "zz", "", ""]]}
+        root = parse_tree(problem_to_sgf(problem))
+        assert root.children[0].get_property("W") == ""
+        assert root.children[0].get_property("C") == "Solution 1: pass\nsource coordinate 'zz' is off-board; exported as pass"
+
+    def test_zz_is_rejected_as_a_setup_stone(self):
+        with pytest.raises(ProblemError):
+            problem_to_sgf({"AB": ["zz"], "SZ": 19, "SOL": []})
+
     def test_sz_accepts_int_and_string(self):
         assert 'SZ[19]' in problem_to_sgf({"SZ": 19, "SOL": []})
         assert 'SZ[13]' in problem_to_sgf({"SZ": "13", "SOL": []})
